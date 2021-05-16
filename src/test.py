@@ -34,33 +34,28 @@ def main():
             "wss://api.ledgerx.com/ws?presence=true", on_open=ws_open, on_message=ws_message)
         ws.run_forever()
 
-    # Start a new thread for the WebSocket interface
-    _thread.start_new_thread(ws_thread, ())
-
-    while True:
-        time.sleep(5)
-
+    def createTable(contractsDict):
         table_data = [
             ['Type', 'Strike', 'Expiration', "Underlying", "Collateral", "Open Interest", "Multiplier", "Ask", "Bid"]]
 
-        for contract in contracts.values():
+        for contractsDict in contractsDict.values():
 
             list = []
 
-            list.append(contract["type"])
-            list.append(contract["strike"])
+            list.append(contractsDict["type"])
+            list.append(contractsDict["strike"])
 
-            date = parse(contract["expiration"])
+            date = parse(contractsDict["expiration"])
 
             list.append(date.strftime('%m/%d/%Y'))
-            list.append(contract["underlying"])
-            list.append(contract["collateral"])
-            list.append(contract["open_interest"])
-            list.append(contract["multiplier"])
+            list.append(contractsDict["underlying"])
+            list.append(contractsDict["collateral"])
+            list.append(contractsDict["open_interest"])
+            list.append(contractsDict["multiplier"])
 
-            if ("ask" in contract.keys()):
-                list.append(contract["ask"])
-                list.append(contract["bid"])
+            if "ask" in contractsDict.keys():
+                list.append(contractsDict["ask"]/100)
+                list.append(contractsDict["bid"]/100)
             else:
                 list.append("N/A")
                 list.append("N/A")
@@ -68,7 +63,15 @@ def main():
             table_data.append(list)
 
         table = AsciiTable(table_data)
-        print(table.table)
+        return table
+
+    # Start a new thread for the WebSocket interface
+    _thread.start_new_thread(ws_thread, ())
+
+    while True:
+        time.sleep(5)
+
+        print(createTable(contracts).table)
         print("Main thread: %d" % time.time())
 
 
