@@ -26,7 +26,6 @@ def main():
             # print(contracts[msg["contract_id"]])
 
     def ws_open(ws):
-        # ws.send('{"event":"subscribe", "subscription":{"name":"trade"}, "pair":["XBT/USD","XRP/USD"]}')
         print("WebSocket Opened")
 
     def ws_thread(*args):
@@ -35,8 +34,9 @@ def main():
         ws.run_forever()
 
     def createTable(contractsDict):
+
         table_data = [
-            ['Type', 'Strike', 'Expiration', "Underlying", "Collateral", "Open Interest", "Multiplier", "Ask", "Bid"]]
+            ['Type', 'Strike', 'Expiration', "Underlying", "Collateral", "Open Interest", "Multiplier", "Ask", "Bid", "Ask per Contract", "Bid per Contract"]]
 
         for contractsDict in contractsDict.values():
 
@@ -54,9 +54,13 @@ def main():
             list.append(contractsDict["multiplier"])
 
             if "ask" in contractsDict.keys():
+                list.append(contractsDict["ask"])
+                list.append(contractsDict["bid"])
                 list.append(contractsDict["ask"]/100)
                 list.append(contractsDict["bid"]/100)
             else:
+                list.append("N/A")
+                list.append("N/A")
                 list.append("N/A")
                 list.append("N/A")
 
